@@ -5,6 +5,12 @@
 package com.begin.bg.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 /**
  *
@@ -12,43 +18,18 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "products")
+@NoArgsConstructor
+@Data
+@Builder
+@AllArgsConstructor
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     private String name;
     private Double price;
+    private ProductStatus status;
 
-    public Product() {
-    }
 
-    public Product(String name, Double price) {
-        this.name = name;
-        this.price = price;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
     
 }

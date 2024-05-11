@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  *
@@ -24,7 +25,7 @@ import java.util.Optional;
  */
 @SpringBootApplication
 @RestController
-@RequestMapping(path = "/api/v1/products")
+@RequestMapping(path = "/products")
 @RequiredArgsConstructor
 public class ProductController {
 
@@ -40,7 +41,7 @@ public class ProductController {
 
     //Get detail product
     @GetMapping("/{id}")
-    ResponseEntity<ResponseObject> findById(@PathVariable int id) {
+    ResponseEntity<ResponseObject> findById(@PathVariable UUID id) {
         Optional<Product> foundProduct = service.findProductById(id);
         return foundProduct.isPresent()
                 ? ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Product found", foundProduct))
@@ -48,7 +49,7 @@ public class ProductController {
     }
 
     /*
-    Product getProductByID(@PathVariable int id){
+    Product getProductByID(@PathVariable UUID id){
         return service.findById(id).orElseThrow(()->new RuntimeException("ERROR"));
     }
      */
@@ -64,7 +65,7 @@ public class ProductController {
 
     //Update product or insert product if not found
     @PutMapping("/{id}")
-    ResponseEntity<ResponseObject> updateProduct(@RequestBody Product newProduct, @PathVariable int id) {
+    ResponseEntity<ResponseObject> updateProduct(@RequestBody Product newProduct, @PathVariable UUID id) {
         Product updatedProduct = service.findProductById(id)
                 .map(product -> {
                     product.setName(newProduct.getName());
@@ -78,11 +79,11 @@ public class ProductController {
 
     //Delete a product
     @DeleteMapping("/{id}")
-    ResponseEntity<ResponseObject> deleteProduct(@PathVariable int id) {
+    ResponseEntity<ResponseObject> deleteProduct(@PathVariable UUID id) {
         Boolean exists = service.productExistsById(id);
         if(exists){
-            service.deleteProductById(id);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Deleted product with id = " + id + " successful!", ""));
+            Product product = service.deleteProductById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Deleted product with id = " + id + " successful!", product));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject("FAIL", "Product not found", ""));
     }
