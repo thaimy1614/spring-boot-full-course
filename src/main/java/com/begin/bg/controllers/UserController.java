@@ -57,6 +57,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Updated User succesful!", updatedUser));
     }
 
+    @GetMapping("/my-info")
+    ResponseEntity<ResponseObject> getMyInfo(){
+        User user = userService.getMyInfo();
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "GET YOUR INFORMATION SUCCESSFUL!", user));
+    }
+
     //Delete a User
     @DeleteMapping("/{id}")
     ResponseEntity<ResponseObject> deleteUser(@PathVariable UUID id) {

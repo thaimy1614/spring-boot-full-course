@@ -43,7 +43,7 @@ public class SecurityConfig {
                         "/products", "/log-out", "/introspect").permitAll().
                 requestMatchers(PUBLIC_ENDPOINTS).permitAll()
 
-                .requestMatchers("/users").hasRole(UserRole.ADMIN.name())
+//                .requestMatchers("/users").hasRole(UserRole.ADMIN.name())
                 .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer ->
