@@ -1,10 +1,9 @@
 package com.begin.bg.repositories;
 
-import com.begin.bg.models.User;
+import com.begin.bg.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 

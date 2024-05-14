@@ -1,12 +1,13 @@
 package com.begin.bg.controllers;
 
-import com.begin.bg.models.User;
-import com.begin.bg.models.ResponseObject;
+import com.begin.bg.entities.User;
+import com.begin.bg.entities.ResponseObject;
 import com.begin.bg.enums.UserStatus;
 import com.begin.bg.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+
 
     @GetMapping("")
     List<User> getAllUsers() {
@@ -47,7 +49,7 @@ public class UserController {
                     User.setUsername(newUser.getUsername());
                     User.setPassword(newUser.getPassword());
                     User.setStatus(UserStatus.UNVERIFIED.name());
-                    User.setRole(newUser.getRole());
+                    User.setRoles(newUser.getRoles());
                     User.setFirstName(newUser.getFirstName());
                     User.setLastName(newUser.getLastName());
                     return userService.saveUser(User);

@@ -1,8 +1,6 @@
-package com.begin.bg.models;
+package com.begin.bg.entities;
 
 
-import com.begin.bg.enums.UserRole;
-import com.begin.bg.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +26,8 @@ public class User {
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
-    private Set<String> role;
+
+    @ManyToMany
+    private Set<Role> roles;
     private String status;
 }

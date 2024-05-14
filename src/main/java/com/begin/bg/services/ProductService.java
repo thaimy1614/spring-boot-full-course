@@ -1,11 +1,8 @@
 package com.begin.bg.services;
 
-import com.begin.bg.models.Product;
-import com.begin.bg.models.ProductStatus;
+import com.begin.bg.entities.Product;
+import com.begin.bg.entities.ProductStatus;
 import com.begin.bg.repositories.ProductRepository;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

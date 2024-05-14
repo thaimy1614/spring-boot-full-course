@@ -5,8 +5,8 @@ import com.begin.bg.dto.request.IntrospectRequest;
 import com.begin.bg.dto.request.InvalidatedTokenRequest;
 import com.begin.bg.dto.response.IntrospectResponse;
 import com.begin.bg.enums.UserRole;
-import com.begin.bg.models.ResponseObject;
-import com.begin.bg.models.User;
+import com.begin.bg.entities.ResponseObject;
+import com.begin.bg.entities.User;
 import com.begin.bg.enums.UserStatus;
 import com.begin.bg.services.AuthenticationService;
 import com.begin.bg.services.UserService;
@@ -34,7 +34,7 @@ public class AuthenticationController {
         newUser.setStatus(UserStatus.UNVERIFIED.name());
         HashSet<String> roles = new HashSet<>();
         roles.add(UserRole.CUSTOMER.name());
-        newUser.setRole(roles);
+//        newUser.setRole(roles);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         return foundUser.isEmpty() ? ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Insert User successful!", userService.saveUser(newUser)))

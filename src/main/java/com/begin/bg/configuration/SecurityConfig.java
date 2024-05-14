@@ -40,8 +40,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.GET,
                         "/products/{id}",
-                        "/products", "/log-out", "/introspect").permitAll().
-                requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        "/products", "/log-out", "/introspect").permitAll()
+                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
 
 //                .requestMatchers("/users").hasRole(UserRole.ADMIN.name())
                 .anyRequest().authenticated());
@@ -57,7 +57,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    JwtAuthenticationConverter converter(){
+    JwtAuthenticationConverter converter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
 

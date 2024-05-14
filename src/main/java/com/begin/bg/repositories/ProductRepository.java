@@ -4,9 +4,8 @@
  */
 package com.begin.bg.repositories;
 
-import com.begin.bg.models.Product;
+import com.begin.bg.entities.Product;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;

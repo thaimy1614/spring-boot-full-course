@@ -1,6 +1,6 @@
 package com.begin.bg.services;
 
-import com.begin.bg.models.User;
+import com.begin.bg.entities.User;
 import com.begin.bg.enums.UserStatus;
 import com.begin.bg.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;

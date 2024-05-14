@@ -1,9 +1,9 @@
 package com.begin.bg.services;
 
 import com.begin.bg.dto.response.IntrospectResponse;
-import com.begin.bg.models.InvalidatedToken;
-import com.begin.bg.models.ResponseObject;
-import com.begin.bg.models.User;
+import com.begin.bg.entities.InvalidatedToken;
+import com.begin.bg.entities.ResponseObject;
+import com.begin.bg.entities.User;
 import com.begin.bg.repositories.InvalidatedTokenRepository;
 import com.begin.bg.repositories.UserRepository;
 import com.nimbusds.jose.*;
@@ -70,9 +70,9 @@ public class AuthenticationService {
 
     private String buildScope(User user){
         StringJoiner stringJoiner = new StringJoiner(" ");
-        if(!user.getRole().isEmpty()){
-            user.getRole().forEach(stringJoiner::add);
-        }
+//        if(!user.getRole().isEmpty()){
+//            user.getRole().forEach(stringJoiner::add);
+//        }
         return stringJoiner.toString();
     }
 

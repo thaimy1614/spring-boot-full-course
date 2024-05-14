@@ -1,4 +1,4 @@
-package com.begin.bg.models;
+package com.begin.bg.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

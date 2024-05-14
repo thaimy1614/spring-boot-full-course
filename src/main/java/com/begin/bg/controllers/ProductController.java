@@ -4,12 +4,10 @@
  */
 package com.begin.bg.controllers;
 
-import com.begin.bg.models.Product;
-import com.begin.bg.models.ResponseObject;
-import com.begin.bg.repositories.ProductRepository;
+import com.begin.bg.entities.Product;
+import com.begin.bg.entities.ResponseObject;
 import com.begin.bg.services.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
