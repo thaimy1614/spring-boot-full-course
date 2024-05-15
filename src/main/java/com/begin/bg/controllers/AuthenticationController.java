@@ -3,11 +3,16 @@ package com.begin.bg.controllers;
 
 import com.begin.bg.dto.request.IntrospectRequest;
 import com.begin.bg.dto.request.InvalidatedTokenRequest;
+import com.begin.bg.dto.request.UserRequest;
 import com.begin.bg.dto.response.IntrospectResponse;
+import com.begin.bg.entities.Permission;
+import com.begin.bg.entities.Role;
 import com.begin.bg.enums.UserRole;
 import com.begin.bg.entities.ResponseObject;
 import com.begin.bg.entities.User;
 import com.begin.bg.enums.UserStatus;
+import com.begin.bg.repositories.PermissionRepository;
+import com.begin.bg.repositories.RoleRepository;
 import com.begin.bg.services.AuthenticationService;
 import com.begin.bg.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,33 +32,55 @@ import java.util.Optional;
 public class AuthenticationController {
     private final AuthenticationService authService;
     private final UserService userService;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final PermissionRepository permissionRepository;
 
     //Insert new User with POST method
     @PostMapping("/signup")
-    ResponseEntity<ResponseObject> insertUser(@RequestBody User newUser) {
-        Optional<User> foundUser = userService.findUserByName(newUser.getUsername().trim());
-        newUser.setStatus(UserStatus.UNVERIFIED.name());
-        HashSet<String> roles = new HashSet<>();
-        roles.add(UserRole.CUSTOMER.name());
-//        newUser.setRole(roles);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-        return foundUser.isEmpty() ? ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Insert User successful!", userService.saveUser(newUser)))
-                : ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ResponseObject("FAIL", "User name already taken", null));
+    ResponseEntity<ResponseObject> insertUser(@RequestBody UserRequest newUser) {
+        Optional<User> foundUser = userService.findUserByName(newUser.getUsername());
+        if (foundUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
+                    .body(new ResponseObject("FAIL", "User name already taken", null));
+        } else {
+            var roleNameList = newUser.getRoles();
+            var roles = roleRepository.findAllById(roleNameList);
+            if (roles.size() != roleNameList.size()) {
+                // Some roles were not found
+                // Handle the scenario where some roles were not found
+                // For example, return an error response
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseObject("FAIL", "Some roles not found", null));
+            }
+            User user = User.builder()
+                    .username(newUser.getUsername())
+                    .firstName(newUser.getFirstName())
+                    .lastName(newUser.getLastName())
+                    .password(passwordEncoder.encode(newUser.getPassword()))
+                    .status(UserStatus.UNVERIFIED.name())
+                    .roles(new HashSet<>(roles))
+                    .build();
+            System.out.println(roleNameList);
+            System.out.println(roles);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseObject("OK", "Insert User successful!", userService.saveUser(user)));
+        }
     }
+
 
     @PostMapping("/auth")
     ResponseEntity<ResponseObject> authenticate(@RequestBody User user) throws Exception {
         var auth = authService.authenticate(user);
-        return auth != null?(ResponseEntity.status(HttpStatus.OK).body(auth)):
+        return auth != null ? (ResponseEntity.status(HttpStatus.OK).body(auth)) :
                 (ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(
                         "FAILED", "Username or password not correct!", null)))
-        ;
+                ;
     }
 
     @GetMapping("/introspect")
     ResponseEntity<ResponseObject> introspect(@RequestBody IntrospectRequest introspectRequest) throws Exception {
-        IntrospectResponse introspect= authService.introspect(introspectRequest.getToken());
+        IntrospectResponse introspect = authService.introspect(introspectRequest.getToken());
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Logout successful!", introspect));
     }
 

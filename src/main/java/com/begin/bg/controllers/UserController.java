@@ -1,8 +1,10 @@
 package com.begin.bg.controllers;
 
+import com.begin.bg.dto.request.UserRequest;
 import com.begin.bg.entities.User;
 import com.begin.bg.entities.ResponseObject;
 import com.begin.bg.enums.UserStatus;
+import com.begin.bg.repositories.RoleRepository;
 import com.begin.bg.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,7 +22,8 @@ import java.util.UUID;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("")
     List<User> getAllUsers() {
@@ -43,19 +47,22 @@ public class UserController {
 
     //Update User or insert User if not found
     @PutMapping("/{id}")
-    ResponseEntity<ResponseObject> updateUser(@RequestBody User newUser, @PathVariable UUID id) {
+    ResponseEntity<ResponseObject> updateUser(@RequestBody UserRequest newUser, @PathVariable UUID id) {
         User updatedUser = userService.findUserById(id)
                 .map(User -> {
+                    var roles = roleRepository.findAllById(newUser.getRoles());
+
                     User.setUsername(newUser.getUsername());
-                    User.setPassword(newUser.getPassword());
+                    User.setPassword(passwordEncoder.encode(newUser.getPassword()));
                     User.setStatus(UserStatus.UNVERIFIED.name());
-                    User.setRoles(newUser.getRoles());
+                    User.setRoles(new HashSet<>(roles));
                     User.setFirstName(newUser.getFirstName());
                     User.setLastName(newUser.getLastName());
                     return userService.saveUser(User);
                 }).orElseGet(() -> {
-                    return userService.saveUser(newUser);
+                    return userService.saveUser(null);
                 });
+
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Updated User succesful!", updatedUser));
     }
 

@@ -38,10 +38,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                .requestMatchers("/users/{id}").permitAll()
                 .requestMatchers(HttpMethod.GET,
                         "/products/{id}",
                         "/products", "/log-out", "/introspect").permitAll()
-                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
 
 //                .requestMatchers("/users").hasRole(UserRole.ADMIN.name())
                 .anyRequest().authenticated());
