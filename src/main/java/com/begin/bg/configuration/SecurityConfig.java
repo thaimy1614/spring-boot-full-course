@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .requestMatchers("/users/{id}").permitAll()
                 .requestMatchers(HttpMethod.GET,
                         "/products/{id}",
-                        "/products", "/log-out", "/introspect").permitAll()
+                        "/products", "/log-out", "/introspect", "/refresh").permitAll()
 
 //                .requestMatchers("/users").hasRole(UserRole.ADMIN.name())
                 .anyRequest().authenticated());

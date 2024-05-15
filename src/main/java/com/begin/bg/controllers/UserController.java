@@ -51,8 +51,6 @@ public class UserController {
         User updatedUser = userService.findUserById(id)
                 .map(User -> {
                     var roles = roleRepository.findAllById(newUser.getRoles());
-
-                    User.setUsername(newUser.getUsername());
                     User.setPassword(passwordEncoder.encode(newUser.getPassword()));
                     User.setStatus(UserStatus.UNVERIFIED.name());
                     User.setRoles(new HashSet<>(roles));

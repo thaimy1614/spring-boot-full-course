@@ -3,6 +3,7 @@ package com.begin.bg.controllers;
 
 import com.begin.bg.dto.request.IntrospectRequest;
 import com.begin.bg.dto.request.InvalidatedTokenRequest;
+import com.begin.bg.dto.request.RefreshTokenRequest;
 import com.begin.bg.dto.request.UserRequest;
 import com.begin.bg.dto.response.IntrospectResponse;
 import com.begin.bg.entities.Permission;
@@ -89,5 +90,11 @@ public class AuthenticationController {
         authService.logout(invalidatedTokenRequest.getToken());
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Logout successful!", invalidatedTokenRequest
                 .getToken()));
+    }
+
+    @GetMapping("/refresh")
+    ResponseEntity<ResponseObject> refreshToken(@RequestBody RefreshTokenRequest request) throws Exception {
+        String token = authService.refreshToken(request);
+        return ResponseEntity.ok(new ResponseObject("OK", "Refresh token successful!", token));
     }
 }

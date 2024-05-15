@@ -1,5 +1,6 @@
 package com.begin.bg.services;
 
+import com.begin.bg.dto.request.RefreshTokenRequest;
 import com.begin.bg.dto.response.IntrospectResponse;
 import com.begin.bg.entities.InvalidatedToken;
 import com.begin.bg.entities.ResponseObject;
@@ -123,6 +124,24 @@ public class AuthenticationService {
                 .builder()
                 .valid(isValid)
                 .build();
+    }
+
+    public String refreshToken(RefreshTokenRequest request) throws Exception {
+        var signedJWT = verifyToken(request.getToken());
+        var jit = signedJWT.getJWTClaimsSet().getJWTID();
+        var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken
+                .builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        var username = signedJWT.getJWTClaimsSet().getSubject();
+        var user = userRepository.findByUsername(username);
+
+        return generateToken(user.get());
     }
 }
 
