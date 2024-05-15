@@ -32,11 +32,16 @@ public class AuthenticationService {
 
     @Value("${jwt.signer-key}")
     private String KEY;
+    @Value("${jwt.expiration-duration}")
+    private long EXPIRATION_DURATION;
+    @Value("${jwt.refreshable-duration}")
+    private String REFRESHABLE_DURATION;
+
     public ResponseObject authenticate(User user) throws Exception {
         User authUser = userRepository.findByUsername(user.getUsername()).get();
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean check = passwordEncoder.matches(user.getPassword(), authUser.getPassword());
-        if(!check) {
+        if (!check) {
             return null;
         }
         var token = generateToken(authUser);
@@ -56,11 +61,10 @@ public class AuthenticationService {
                 .subject(user.getUsername())
                 .issuer("Thaidq")
                 .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
+                .expirationTime(new Date(Instant.now().plus(EXPIRATION_DURATION, ChronoUnit.SECONDS).toEpochMilli()))
                 .claim("scope", buildScope(user))
                 .jwtID(UUID.randomUUID().toString())
-                .build()
-                ;
+                .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
 
@@ -69,13 +73,13 @@ public class AuthenticationService {
         return jwsObject.serialize();
     }
 
-    private String buildScope(User user){
+    private String buildScope(User user) {
         StringJoiner stringJoiner = new StringJoiner(" ");
-        if(!user.getRoles().isEmpty()){
+        if (!user.getRoles().isEmpty()) {
             user.getRoles().forEach(role ->
                     {
                         stringJoiner.add(role.getName());
-                        if(!role.getPermissions().isEmpty())
+                        if (!role.getPermissions().isEmpty())
                             role.getPermissions().forEach(permission -> stringJoiner.add(permission.getName()));
                     }
             );
@@ -85,7 +89,7 @@ public class AuthenticationService {
     }
 
     public void logout(String token) throws Exception {
-        var signedJWT = verifyToken(token);
+        var signedJWT = verifyToken(token, true);
         String jId = signedJWT.getJWTClaimsSet().getJWTID();
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
@@ -97,12 +101,12 @@ public class AuthenticationService {
         invalidatedTokenRepository.save(invalidatedToken);
     }
 
-    private SignedJWT verifyToken(String token) throws Exception {
+    private SignedJWT verifyToken(String token, boolean isRefresh) throws Exception {
         JWSVerifier verifier = new MACVerifier(KEY.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(token);
-        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expiryTime = (isRefresh) ? new Date(signedJWT.getJWTClaimsSet().getIssueTime().toInstant().plus(Long.parseLong(REFRESHABLE_DURATION), ChronoUnit.SECONDS).toEpochMilli()) : signedJWT.getJWTClaimsSet().getExpirationTime();
         var verified = signedJWT.verify(verifier);
-        if(!verified){
+        if (!(verified&& expiryTime.after(new Date()))) {
             throw new Exception("UNAUTHENTICATED");
         }
 
@@ -115,9 +119,9 @@ public class AuthenticationService {
     public IntrospectResponse introspect(String token) throws Exception {
         boolean isValid = true;
         try {
-            verifyToken(token);
+            verifyToken(token, false);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             isValid = false;
         }
         return IntrospectResponse
@@ -127,7 +131,7 @@ public class AuthenticationService {
     }
 
     public String refreshToken(RefreshTokenRequest request) throws Exception {
-        var signedJWT = verifyToken(request.getToken());
+        var signedJWT = verifyToken(request.getToken(), true);
         var jit = signedJWT.getJWTClaimsSet().getJWTID();
         var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
