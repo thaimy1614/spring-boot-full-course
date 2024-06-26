@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +27,8 @@ public class User {
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
+    private LocalDate dob;
+    private String city;
 
     @ManyToMany
     private Set<Role> roles;

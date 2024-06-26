@@ -17,6 +17,7 @@ import com.begin.bg.repositories.RoleRepository;
 import com.begin.bg.services.AuthenticationService;
 import com.begin.bg.services.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,7 +30,8 @@ import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/")
+@RequestMapping("/users")
+@Slf4j
 public class AuthenticationController {
     private final AuthenticationService authService;
     private final UserService userService;
@@ -40,6 +42,7 @@ public class AuthenticationController {
     //Insert new User with POST method
     @PostMapping("/signup")
     ResponseEntity<ResponseObject> insertUser(@RequestBody UserRequest newUser) {
+        log.info("Create user");
         Optional<User> foundUser = userService.findUserByName(newUser.getUsername());
         if (foundUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)

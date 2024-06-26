@@ -13,5 +13,7 @@ spring:
         dialect: org.hibernate.dialect.SQLServerDialect
 jwt:
   signer-key: HJ4ppveef04BKJzTq+dyLhRdicqYiQWxaSqTLiTUxksDu4zMs/NLfrJsbHz+4OiB
-  expiration-duration: 20 # in sec
-  refreshable-duration: 120 # in sec
+  expiration-duration: 20000 # in sec
+  refreshable-duration: 120000000 # in sec
+server:
+  port: 8080

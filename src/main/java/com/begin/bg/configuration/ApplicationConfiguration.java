@@ -6,6 +6,7 @@ import com.begin.bg.enums.UserRole;
 import com.begin.bg.enums.UserStatus;
 import com.begin.bg.entities.User;
 import com.begin.bg.repositories.PermissionRepository;
+import com.begin.bg.repositories.RoleRepository;
 import com.begin.bg.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationRunner;
@@ -23,11 +24,13 @@ public class ApplicationConfiguration {
 
     private final PasswordEncoder passwordEncoder;
     private final PermissionRepository permissionRepository;
+    private final RoleRepository roleRepository;
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository){
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()){
                 var permissions = permissionRepository.findAll();
+                roleRepository.save(Role.builder().name("ADMIN").description("Admin_role").permissions(new HashSet<>(permissions)).build());
                 Set<Role> roles =new HashSet<>();
                 roles.add(Role
                         .builder()

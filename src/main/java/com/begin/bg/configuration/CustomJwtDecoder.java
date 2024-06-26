@@ -5,6 +5,7 @@ import com.begin.bg.services.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -17,6 +18,7 @@ import java.text.ParseException;
 import java.util.Objects;
 
 @Component
+@Configuration
 public class CustomJwtDecoder implements JwtDecoder {
     @Value("${jwt.signer-key}")
     private String KEY;
